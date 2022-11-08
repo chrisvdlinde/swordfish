@@ -1,0 +1,18 @@
+{% extends 'mainapp/layout.html' %}
+{% load static %}
+
+{% block content %}
+
+<h2 class="ui center aligned icon header">
+    <i class="circular github icon"></i>
+    Swordfish Issues Login
+  </h2>
+
+<div class="ui center aligned container">
+    <a href="{% url 'authorize' %}" class="ui facebook button">
+        <i class="github icon"></i>
+        Github
+    </a>
+</div>
+
+{% endblock %}

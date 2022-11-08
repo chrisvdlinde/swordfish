@@ -1,0 +1,40 @@
+{% extends 'mainapp/layout.html' %}
+{% load static %}
+
+{% block content %}
+
+<h2 class="ui center aligned icon header">
+    <i class="circular github icon"></i>
+    Swordfish Issues
+  </h2>
+<div>
+<table class="ui fixed single line celled table">
+    <thead>
+        <tr><th>Number</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Priority</th>
+        <th>Client</th>
+        <th>Type</th>
+        <th>Assigned To</th>
+      </tr></thead>
+    <tbody>
+    {% for i in issues %}
+    <tr>
+        <td data-label="Number">{{i.number}}</td>
+        <td data-label="Title">{{i.title}}</td>
+        <td data-label="Description">{{i.description}}</td>
+        <td data-label="Priority">{{i.priority}}</td>
+        <td data-label="Client">{{i.client}}</td>
+        <td data-label="Type">{{i.type}}</td>
+        <td data-label="Assigned To">{{i.assigned_to}}</td>
+    </tr>
+    {% endfor %}
+</tbody>
+</table>
+</div>
+<div class="ui center aligned container">
+  <a href="{% url 'create_issue' %}" class="ui facebook button">Add a Issue</a>
+</div>
+
+{% endblock %}
