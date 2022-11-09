@@ -52,10 +52,14 @@ def get_issues(token):
 
     response = requests.get(url,headers=headers)
     #print(response.status_code)
-    data = response.json()
+    if response.status_code == 200:
+        data = response.json()
     #print(data)
 
-    return data
+        return data
+
+    else: 
+        return 'You are not authorized to view this page'
 
 
 
