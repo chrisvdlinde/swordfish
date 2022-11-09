@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .forms import IssueForm
+from .forms import IssueForm, LabelForm
 from .github import authorize, get_token, get_issues, add_issues
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Issue
 import requests
+import json
 
 
 # Create your views here.
@@ -23,13 +24,17 @@ def github_auth(request):
 def complete(request):
     code = request.GET.get('code')
     state = request.GET.get('state')
+    print(code)
+    print(state)
 
     r = get_token(state, code)
     if r == 'Incorrect State!':
         pass
     else:
        output = r.json()
+       print(output)
        token = output['access_token']
+       print(token)
        request.session['token'] = token
 
        return redirect('issues')
@@ -77,9 +82,42 @@ def create_issue(request):
             }
             r = requests.post(url=url, headers=headers, params=params, json=data)
             data = r.json()
-            print(r.status_code)
-            print(data)
+            if r.status_code == 200:
+                return redirect(issues)
+            else:
+                return 'Error generated'
+
 
 
     context['form'] = IssueForm()
     return render (request, 'mainapp/create_issue.html', context)
+
+
+
+def add_label(request):
+    token = request.session.get('token')
+    print(token)
+    context = {}
+    if request.method == 'POST':
+        form = LabelForm(request.POST)
+        if form.is_valid():
+            type = form.cleaned_data['type']
+            priority = form.cleaned_data['priority']
+            client = form.cleaned_data['client']
+            issue_number = form.cleaned_data['issue_number']
+            url = 'https://api.github.com/repos/swordfishcode/gitintegration/issues/%s/labels' % (issue_number)
+            print(url) 
+            headers = {'Authorization': 'token {}'.format(token),
+                       'accept': 'application/vnd.github+json',}
+            data = {"labels":["{%s}","{%s}","{%s}"]} % (client, priority, type)
+            r = requests.post(url=url, headers=headers, json=data)
+            data = r.json()
+            print(r.status_code)
+            print(data)
+            if r.status_code == 200:
+                return redirect(issues)
+            else: 
+                return 'Error generated'
+
+    context['form'] = LabelForm()
+    return render (request, 'mainapp/add_label.html', context)

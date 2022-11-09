@@ -1,37 +1,38 @@
 import requests
 import json
 from urllib.parse import urljoin
-from decouple import config
+from django.conf import settings
 
-id = config('ID')
-secret = config('SECRET')
-git_state = config('GIT_STATE')
+ID = settings.ID
+SECRET = settings.SECRET
+GIT_STATE = settings.GIT_STATE
 
 
 
 def authorize():
     url = 'https://github.com/login/oauth/authorize'
     parameters = {
-        'client_id' : id,
+        'client_id' : ID,
         'redirect_uri' : 'https://ec2-44-210-115-253.compute-1.amazonaws.com:8150/complete',
         'scope': 'repo',
-        'state': git_state,
+        'state': GIT_STATE,
         'allow_signup' : 'false'
     }
 
     response = requests.get(url=url,params=parameters)
+    print(response.status_code)
     
     return response
 
 
 def get_token(state, code):
-    if state != git_state:
+    if state != GIT_STATE:
         return 'Incorrect State!'
 
     url = 'https://github.com/login/oauth/access_token'
     parameters = {
-        'client_id' : id,
-        'client_secret' : secret,
+        'client_id' : ID,
+        'client_secret' : SECRET,
         'code' : code,
         'redirect_uri' : 'https://ec2-44-210-115-253.compute-1.amazonaws.com:8150/complete',
     }
@@ -39,6 +40,7 @@ def get_token(state, code):
     header = {'Accept' : 'application/json'}
 
     response = requests.post(url=url,params=parameters, headers=header)
+    print(response.status_code)
     
 
     return response

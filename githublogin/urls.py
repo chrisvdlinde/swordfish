@@ -24,5 +24,6 @@ urlpatterns = [
     path('complete', views.complete, name='complete'),
     path('issues', views.issues, name='issues'),
     path('create_issue', views.create_issue, name='create_issue'),
+    path('add_label', views.add_label, name='add_label'),
     path('api-auth/', include('rest_framework.urls'))
 ]
