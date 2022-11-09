@@ -43,7 +43,8 @@ def complete(request):
 def issues(request):
     token = request.session.get('token')
     r = get_issues(token)
-    context = {'issues': r}
+    issues = Issue.objects.all()
+    context = {'issues': issues}
     
     for i in r:
         issue_data = Issue (
