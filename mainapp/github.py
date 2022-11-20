@@ -13,7 +13,7 @@ def authorize():
     url = 'https://github.com/login/oauth/authorize'
     parameters = {
         'client_id' : ID,
-        'redirect_uri' : 'https://ec2-44-210-115-253.compute-1.amazonaws.com:8150/complete',
+        'redirect_uri' : 'http://localhost:8000/complete',
         'scope': 'repo',
         'state': GIT_STATE,
         'allow_signup' : 'false'
@@ -34,7 +34,7 @@ def get_token(state, code):
         'client_id' : ID,
         'client_secret' : SECRET,
         'code' : code,
-        'redirect_uri' : 'https://ec2-44-210-115-253.compute-1.amazonaws.com:8150/complete',
+        'redirect_uri' : 'http://localhost:8000/complete',
     }
 
     header = {'Accept' : 'application/json'}
@@ -46,7 +46,7 @@ def get_token(state, code):
     return response
 
 def get_issues(token):
-    url = 'https://api.github.com/repos/swordfishcode/gitintegration/issues'
+    url = 'https://api.github.com/repos/chrisvdlinde/issues/issues'
     headers = {'Authorization': 'token {}'.format(token),
                'Accept': 'application/vnd.github.VERSION.text+json'}
 
@@ -61,10 +61,27 @@ def get_issues(token):
     else: 
         return 'You are not authorized to view this page'
 
+def get_issue(url, token):
+    headers = {'Authorization': 'token {}'.format(token),
+               'Accept': 'application/vnd.github.VERSION.text+json'}
 
+    r = requests.get(url,headers=headers)
+    
+    return r.json()
+
+"""
+def get_labels(url, token):
+    url = url.replace('{/name}', '')
+    headers = {'Authorization': 'token {}'.format(token),
+               'Accept': 'application/vnd.github.VERSION.text+json'}
+
+    r = requests.get(url,headers=headers)
+    
+    return r.json()
+"""
 
 def add_issues(token):
-    url = 'https://api.github.com/repos/swordfishcode/gitintegration/issues'
+    url = 'https://api.github.com/repos/chrisvdlinde/issues/issues'
     headers = {'Authorization': 'token {}'.format(token),
                'Accept': 'application/vnd.github.VERSION.text+json',
                 'Owner' : 'swordfishcode',

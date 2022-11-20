@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect
 from .forms import IssueForm, LabelForm
-from .github import authorize, get_token, get_issues, add_issues
+from .github import authorize, get_token, get_issues, add_issues, get_issue
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Issue
+from .models import Issue, Client, Priority, Type
 import requests
 import json
 
@@ -43,21 +43,46 @@ def complete(request):
 def issues(request):
     token = request.session.get('token')
     r = get_issues(token)
-    issues = Issue.objects.all()
-    context = {'issues': issues}
-    
+        
     for i in r:
-        issue_data = Issue (
-            number = i['number'],
-            title = i['title'],
-            description = i['body_text'],
-        )
+        if len(i['labels']) > 0:
+            for l in i['labels']:
+                if l['name'].startswith('C:'):
+                    if Client.objects.filter(name=l['name']).exists():
+                        client = Client.objects.get(name=l['name'])
+                    else:
+                        client = Client.objects.create(name=l['name'])
+                elif l['name'].startswith('P:'):
+                    if Priority.objects.filter(name=l['name']).exists():
+                        priority = Priority.objects.get(name=l['name'])
+                    else:
+                        priority = Priority.objects.create(name=l['name'])
+                elif l['name'].startswith('T:'):
+                    if Type.objects.filter(name=l['name']).exists():
+                        type = Type.objects.get(name=l['name'])
+                    else:
+                        type = Type.objects.create(name=l['name'])
+        
+        number = i['number']
+        title = i['title']
+        desc = i['body_text']
+        state = i['state']
+        assignee = i['assignee']
 
+        try:
+            Issue.objects.create(number=number, title=title, description=desc,
+            client=client, priority=priority, type=type, assigned_to=assignee, status=state)
+        except:
+            pass
 
-            
-        issue_data.save()
-        #Issue = Issue.objects.all()
+        client = None
+        priority = None
+        type = None
+    
+        
+    issues = Issue.objects.all()
 
+    context = {'issues': issues}
 
     return render(request, 'mainapp/issues.html', context)
 

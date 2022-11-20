@@ -3,11 +3,12 @@
 
 {% block content %}
 
-<h2 class="ui center aligned icon header">
+<h2 class="ui center aligned icon header" style="margin-top: 20px;">
     <i class="circular github icon"></i>
     Swordfish Issues
   </h2>
 <div>
+<div class="ui container">
 <table class="ui fixed single line celled table">
     <thead>
         <tr><th>Number</th>
@@ -17,6 +18,7 @@
         <th>Client</th>
         <th>Type</th>
         <th>Assigned To</th>
+        <th></th>
       </tr></thead>
     <tbody>
     {% for i in issues %}
@@ -28,17 +30,14 @@
         <td data-label="Client">{{i.client}}</td>
         <td data-label="Type">{{i.type}}</td>
         <td data-label="Assigned To">{{i.assigned_to}}</td>
+        <td><button class="ui primary button">
+          View
+        </button></td>
     </tr>
     {% endfor %}
 </tbody>
 </table>
 </div>
-<div class="ui center aligned container">
-  <a href="{% url 'create_issue' %}" class="ui facebook button">Add a Issue</a>
-</div>
 
-<div class="ui center aligned container">
-  <a href="{% url 'add_label' %}" class="ui facebook button">Add Label to issue</a>
-</div>
 
 {% endblock %}
